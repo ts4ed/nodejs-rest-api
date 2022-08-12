@@ -1,9 +1,13 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-const { errorHandler } = require("./Helpers/apiHelpers");
+const { errorHandler } = require("./Helpers/errorHandler");
+const { authMiddleware } = require("./middlewares/authMiddleware");
 
 const contactsRouter = require("./routes/api/contacts");
+const authRouter = require("./routes/api/auth");
+const usersRouter = require("./routes/api/users");
+
 const { request } = require("express");
 
 const app = express();
@@ -14,7 +18,9 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", authMiddleware, contactsRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use(errorHandler);
 
 app.use((req, res) => {
